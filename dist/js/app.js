@@ -5,8 +5,6 @@ async function fetchPeopleData() {
     const responsePeople = await fetch('https://swapi.dev/api/people/');
     const data = await responsePeople.json();
 
-    // console.log(data)
-
     const responsePlanet = await fetch('https://swapi.dev/api/planets/');
     const planetData = await responsePlanet.json();
 
@@ -14,9 +12,10 @@ async function fetchPeopleData() {
     let starWars = '';
         dataArray.push(obj);
         planetData.results.forEach( planetObj => {
-            if (obj.homeworld === planetObj.url)
+            if (obj.homeworld === planetObj.url) {
                 // console.log(`obj.homeworld = ${obj.homeworld}`)
                 // console.log(`planetData: ${planetObj.url}`)
+
                 starWars += `
                 <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
                     <img class="w-full" src="https://i.ytimg.com/vi/qew27BNl7io/maxresdefault.jpg" alt="" />
@@ -34,11 +33,10 @@ async function fetchPeopleData() {
                 </div>
                 `
                 dataArray.push(planetObj)
+            }
         })
-        // console.log(dataArray)
         document.getElementById('star-wars').innerHTML += starWars;
     })
-    console.log(dataArray)
 }
 
 fetchPeopleData();
