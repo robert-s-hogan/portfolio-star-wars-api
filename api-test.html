@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let dataArray = [];
+
+        const PEOPLE_URL = 'https://swapi.dev/api/people/';
+        const PLANET_URL = 'https://swapi.dev/api/planets/';
+
+        async function getPeopleData() {
+            const response = await fetch(PEOPLE_URL);
+            const data = await response.json();
+
+            const res = await fetch(PLANET_URL);
+            const planetData = await res.json();
+
+            let counter = 0;
+            for (let { name, height, birth_year, homeworld } of data.results ) {
+                dataArray.push( {id: counter++, fullname: name, height: height, birth_year: birth_year, home_world: homeworld })
+            }
+
+            dataArray.forEach( element => {
+                for (let { name, terrain, url } of planetData.results ) {
+                    if( element.home_world === url) {
+                        element.home_world = name;
+                    }
+                }
+            })
+            console.log(dataArray)
+        }
+        getPeopleData();
+    </script>
+</body>
+</html>
