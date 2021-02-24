@@ -16,63 +16,84 @@
         const PEOPLE_URL = 'https://swapi.dev/api/people/';
         const PLANET_URL = 'https://swapi.dev/api/planets/';
 
-        async function getData(url) {
-            const response = await fetch(url);
-            const data = await response.json();
-            return data;
-        }
+        let dataArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
-        let dataArray = [];
+        async function getPeopleData(PEOPLE_URL) {
+            console.time('.map()')
+            Promise.all(
+            dataArray.map(id => {
+                return new Promise((resolve) => {
+                fetch(PEOPLE_URL + `?page=${id}`)
+                    .then(response => {
+                    return new Promise(() => {
+                        response.json()
+                        .then(todo => {
+                            todo.results.forEach( element =>  {
+                                dataArray.push(element)
+                            })
+                            resolve()
+                        })
+                    })
+                    })
+                })
+            })
+            )
+            .then(() => {
+                console.timeEnd('.map()');
+            })
+        }
 
         async function createMainDataObject() {
-            const characterData = await getData(PEOPLE_URL);
-            let url;
-            characterData.results.forEach( element => { 
-                url = element.homeworld;
-                dataArray.push( { 'character': { 'name': element.name, height: element.height, mass: element.mass, birth_year: element.birth_year, 'home_worldURL': element.homeworld, 'home_world': { 'name': '', 'terrain': '', 'climate': ''} }})
-            });
+            // let url;
+            // data.results.forEach( element => { 
+            //     url = element.homeworld;
+            //     dataArray.push( { 'character': { 'name': element.name, height: element.height, mass: element.mass, birth_year: element.birth_year, 'home_worldURL': element.homeworld, 'home_world': { 'name': '', 'terrain': '', 'climate': ''} }})
+            // });
 
-            return dataArray;
-        }
-
-        async function returnHomeWorldValues() {
-            await createMainDataObject();
+            // return dataArray;
             console.log(dataArray)
-            const planetData = await getData(PLANET_URL);
-            dataArray.forEach(obj => {
-                const url = obj.character.home_worldURL;
-                planetData.results.forEach( element => {
-                if (element.url === url) {
-                    obj.character['home_world'].name = element.name;
-                    obj.character['home_world'].terrain = element.terrain;
-                    obj.character['home_world'].climate = element.climate;
-                    }
-                })
-            });
-
-            let starWars = '';
-
-            dataArray.forEach( element => {
-                starWars += `
-                    <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
-                        <img class="w-full" src="https://i.pinimg.com/originals/ab/59/08/ab59083db9af54986221c5c1409e26a9.gif" alt="" />
-                        <div class="badge absolute top-0 right-0 bg-red-500 m-1 text-gray-200 p-1 px-2 text-xxl font-bold rounded">In Development</div>
-                        <div class="info-box text-xs flex p-1 font-semibold text-gray-500 bg-gray-300">
-                            <span class="mr-1 p-1 px-2 font-bold">Height ${element.character.height}</span>
-                            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">Mass ${element.character.mass}</span>
-                            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">DOB ${element.character.birth_year}</span>
-                        </div>
-                        <div class="desc p-4 text-gray-800">
-                            <a href="https://www.youtube.com/watch?v=dvqT-E74Qlo" target="_new" class="title font-bold block cursor-pointer hover:underline">${element.character.name}</a>
-                            <a href="" target="_new" class="badge bg-indigo-500 text-blue-100 rounded px-1 text-xs font-bold cursor-pointer">${element.character.home_world.name}</a>
-                            <span class="description text-sm block py-2 border-gray-400 mb-2">Star Wars API: Pulling character information.  Working on scraping images to use for the charcter profile.</span>
-                        </div>
-                    </div>
-                `
-            })
-            document.getElementById('star-wars').innerHTML += starWars;
         }
-        returnHomeWorldValues();
+
+        getPeopleData(PEOPLE_URL);
+
+        // async function returnHomeWorldValues() {
+        //     await createMainDataObject();
+        //     console.log(dataArray)
+        //     const planetData = await getData(PLANET_URL);
+        //     dataArray.forEach(obj => {
+        //         const url = obj.character.home_worldURL;
+        //         planetData.results.forEach( element => {
+        //         if (element.url === url) {
+        //             obj.character['home_world'].name = element.name;
+        //             obj.character['home_world'].terrain = element.terrain;
+        //             obj.character['home_world'].climate = element.climate;
+        //             }
+        //         })
+        //     });
+
+        //     let starWars = '';
+
+        //     dataArray.forEach( element => {
+        //         starWars += `
+        //             <div class="each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
+        //                 <img class="w-full" src="https://i.pinimg.com/originals/ab/59/08/ab59083db9af54986221c5c1409e26a9.gif" alt="" />
+        //                 <div class="badge absolute top-0 right-0 bg-red-500 m-1 text-gray-200 p-1 px-2 text-xxl font-bold rounded">In Development</div>
+        //                 <div class="info-box text-xs flex p-1 font-semibold text-gray-500 bg-gray-300">
+        //                     <span class="mr-1 p-1 px-2 font-bold">Height ${element.character.height}</span>
+        //                     <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">Mass ${element.character.mass}</span>
+        //                     <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">DOB ${element.character.birth_year}</span>
+        //                 </div>
+        //                 <div class="desc p-4 text-gray-800">
+        //                     <a href="https://www.youtube.com/watch?v=dvqT-E74Qlo" target="_new" class="title font-bold block cursor-pointer hover:underline">${element.character.name}</a>
+        //                     <a href="" target="_new" class="badge bg-indigo-500 text-blue-100 rounded px-1 text-xs font-bold cursor-pointer">${element.character.home_world.name}</a>
+        //                     <span class="description text-sm block py-2 border-gray-400 mb-2">Star Wars API: Pulling character information.  Working on scraping images to use for the charcter profile.</span>
+        //                 </div>
+        //             </div>
+        //         `
+        //     })
+        //     document.getElementById('star-wars').innerHTML += starWars;
+        // }
+        // returnHomeWorldValues();
 
     </script>
     <script src="dist/js/app.js"></script>
